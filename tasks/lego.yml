@@ -21,7 +21,7 @@
 
 - name: Fetches latest version
   get_url:
-    url: "{{ __lego_url }}"
+    url: "{{ __lego_url.0 }}"
     dest: /tmp/lego.gz
 
 - name: Fetch & unarchive lego
