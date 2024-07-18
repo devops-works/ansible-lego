@@ -13,7 +13,7 @@
     var: __lego_repo_info.json
 
 - set_fact:
-    __lego_url: "{{ __lego_repo_info.json | community.general.json_query([?contains(name,'linux_amd64')].browser_download_url) }}"
+    __lego_url: "{{ __lego_repo_info.json | community.general.json_query([assets?contains(name,'linux_amd64')].browser_download_url) }}"
 
 - debug:
     var: __lego_url
