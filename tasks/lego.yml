@@ -22,8 +22,17 @@
 - name: Fetches latest version
   get_url:
     url: "{{ __lego_url.0 }}"
-    dest: /tmp/lego.gz
+    dest: /tmp/lego.tar.gz
 
-- name: Fetch & unarchive lego
-  # can not use unachive, does not support gz
-  shell: gunzip -cd /tmp/lego.gz > /usr/local/bin/lego && chmod 755 /usr/local/bin/lego
+- name: Untar lego
+  unarchive:
+    src: /tmp/lego.tar.gz
+    dest: /tmp
+    remote_src: yes
+    creates: /tmp/lego
+
+- name: Copy lego to /usr/local/bin
+  copy:
+    src: /tmp/lego
+    dest: /usr/local/bin/lego
+    mode: 0755
