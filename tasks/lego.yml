@@ -34,5 +34,6 @@
 - name: Copy lego to /usr/local/bin
   copy:
     src: /tmp/lego
+    remote_src: yes
     dest: /usr/local/bin/lego
     mode: 0755
