@@ -1,0 +1,17 @@
+---
+- name: Checks if lego is already present
+  stat:
+    path: /usr/local/bin/lego
+  register: __lego
+  tags:
+    - always
+
+- include_tasks:
+    file: lego.yml
+    apply:
+      tags:
+        - lego
+  when: __lego is defined and (not __lego.stat.exists or lego_force_install)
+  tags:
+    - always
+

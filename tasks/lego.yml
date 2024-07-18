@@ -1,0 +1,28 @@
+---
+# curl -s https://api.github.com/repos/go-acme/lego/releases/latest | 
+# jq -r '.assets[] | select(.name | contains ("linux_amd64")) | .browser_download_url'
+- name: Finds latest influxevent version
+  uri:
+    url: https://api.github.com/repos/go-acme/lego/releases/latest
+    status_code:
+      - 200
+  register: __lego_repo_info
+  check_mode: no
+
+- debug:
+    var: __lego_repo_info.json
+
+- set_fact:
+    __lego_url: "{{ __lego_repo_info.json | community.general.json_query([?contains(name,'linux_amd64')].browser_download_url) }}"
+
+- debug:
+    var: __lego_url
+
+- name: Fetches latest version
+  get_url:
+    url: "{{ __lego_url }}"
+    dest: /tmp/lego.gz
+
+- name: Fetch & unarchive lego
+  # can not use unachive, does not support gz
+  shell: gunzip -cd /tmp/lego.gz > /usr/local/bin/lego && chmod 755 /usr/local/bin/lego
