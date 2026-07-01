@@ -2,37 +2,37 @@
 # curl -s https://api.github.com/repos/go-acme/lego/releases/latest | 
 # jq -r '.assets[] | select(.name | contains ("linux_amd64")) | .browser_download_url'
 - name: Finds latest influxevent version
-  uri:
+  ansible.builtin.uri:
     url: https://api.github.com/repos/go-acme/lego/releases/latest
     status_code:
       - 200
   register: __lego_repo_info
   check_mode: no
 
-- debug:
+- ansible.builtin.debug:
     var: __lego_repo_info.json
 
-- set_fact:
+- ansible.builtin.set_fact:
     __lego_url: "{{ __lego_repo_info.json | community.general.json_query(url_query) }}"
   vars:
     url_query: "assets[?ends_with(name,'linux_amd64.tar.gz')].browser_download_url"
-- debug:
+- ansible.builtin.debug:
     var: __lego_url
 
 - name: Fetches latest version
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ __lego_url.0 }}"
     dest: /tmp/lego.tar.gz
 
 - name: Untar lego
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/lego.tar.gz
     dest: /tmp
     remote_src: yes
     creates: /tmp/lego
 
 - name: Copy lego to /usr/local/bin
-  copy:
+  ansible.builtin.copy:
     src: /tmp/lego
     remote_src: yes
     dest: /usr/local/bin/lego

@@ -1,12 +1,12 @@
 ---
 - name: Checks if lego is already present
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/lego
   register: __lego
   tags:
     - always
 
-- include_tasks:
+- ansible.builtin.include_tasks:
     file: lego.yml
     apply:
       tags:
