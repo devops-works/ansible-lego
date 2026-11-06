@@ -1,39 +1,31 @@
 ---
-# curl -s https://api.github.com/repos/go-acme/lego/releases/latest | 
-# jq -r '.assets[] | select(.name | contains ("linux_amd64")) | .browser_download_url'
-- name: Finds latest influxevent version
-  ansible.builtin.uri:
-    url: https://api.github.com/repos/go-acme/lego/releases/latest
-    status_code:
-      - 200
-  register: __lego_repo_info
-  check_mode: no
-
-- ansible.builtin.debug:
-    var: __lego_repo_info.json
-
-- ansible.builtin.set_fact:
-    __lego_url: "{{ __lego_repo_info.json | community.general.json_query(url_query) }}"
-  vars:
-    url_query: "assets[?ends_with(name,'linux_amd64.tar.gz')].browser_download_url"
-- ansible.builtin.debug:
-    var: __lego_url
-
-- name: Fetches latest version
+# Assets of a release are named lego_v<version>_linux_<arch>.tar.gz and come
+# with lego_<version>_checksums.txt (sha256).
+- name: Downloads lego {{ lego_version }}
   ansible.builtin.get_url:
-    url: "{{ __lego_url.0 }}"
-    dest: /tmp/lego.tar.gz
+    url: "https://github.com/go-acme/lego/releases/download/v{{ lego_version }}/lego_v{{ lego_version }}_linux_{{ lego_arch }}.tar.gz"
+    checksum: "sha256:https://github.com/go-acme/lego/releases/download/v{{ lego_version }}/lego_{{ lego_version }}_checksums.txt"
+    dest: "/tmp/lego_v{{ lego_version }}_linux_{{ lego_arch }}.tar.gz"
+    mode: "0644"
 
-- name: Untar lego
+- name: Unpacks lego {{ lego_version }}
   ansible.builtin.unarchive:
-    src: /tmp/lego.tar.gz
+    src: "/tmp/lego_v{{ lego_version }}_linux_{{ lego_arch }}.tar.gz"
     dest: /tmp
-    remote_src: yes
-    creates: /tmp/lego
+    remote_src: true
+    include:
+      - lego
 
-- name: Copy lego to /usr/local/bin
+- name: Installs lego {{ lego_version }}
   ansible.builtin.copy:
     src: /tmp/lego
-    remote_src: yes
+    remote_src: true
     dest: /usr/local/bin/lego
-    mode: 0755
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Removes the unpacked binary
+  ansible.builtin.file:
+    path: /tmp/lego
+    state: absent

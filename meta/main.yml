@@ -1,16 +1,20 @@
 ---
-
 dependencies: []
 
 galaxy_info:
   author: DevopsWorks
-  company: DevopsWorks 
-  description: ansible-influxevent role (https://gitlab.com/devopsworks/tools/influxevent)
+  company: DevopsWorks
+  description: Installs a pinned release of lego, the ACME client (https://github.com/go-acme/lego)
   license: MIT
-  min_ansible_version: "2.4"
+  min_ansible_version: "2.12"
   platforms:
-  - name: Ubuntu
-    versions:
-    - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
   galaxy_tags:
-  - system
+    - system
+    - acme
+    - letsencrypt

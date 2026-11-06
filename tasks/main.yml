@@ -1,17 +1,23 @@
 ---
-- name: Checks if lego is already present
-  ansible.builtin.stat:
-    path: /usr/local/bin/lego
-  register: __lego
+- name: Reads the installed lego version
+  ansible.builtin.command: /usr/local/bin/lego --version
+  register: __lego_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
   tags:
     - always
 
-- ansible.builtin.include_tasks:
+# `lego --version` prints "lego version 4.35.2 linux/amd64"
+- name: Installs lego when missing, at another version, or when forced
+  ansible.builtin.include_tasks:
     file: lego.yml
     apply:
       tags:
         - lego
-  when: __lego is defined and (not __lego.stat.exists or lego_force_install)
+  when: >-
+    lego_force_install
+    or __lego_installed.rc != 0
+    or ('lego version ' ~ lego_version ~ ' ') not in __lego_installed.stdout
   tags:
     - always
-
