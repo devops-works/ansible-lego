@@ -1,10 +1,6 @@
 ---
-# Release to install, without the leading "v". Pinned on purpose: the role used
-# to fetch the latest GitHub release, and lego 5 (2026-05) reorganised the
-# command line (flags moved from global to subcommands, --path gone, run and
-# renew merged), which broke the callers' cron entries and runbooks. Stay on
-# the 4.x line until those are migrated, then bump this deliberately.
-lego_version: "4.35.2"
+# Release to install, without the leading "v".
+lego_version: "5.6.0"
 
 # Architecture suffix of the release asset.
 lego_arch: amd64
